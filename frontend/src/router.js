@@ -3,9 +3,10 @@ import Router from 'vue-router';
 
 
 import Home from './components/Home.vue';
-import Ping from './components/Ping.vue';
+import Checkpoints from './components/Checkpoints.vue';
 import NotFound from './components/NotFound.vue';
 import Register from './components/Register.vue';
+import Tester from './components/Tester.vue';
 
 
 
@@ -26,9 +27,14 @@ export default new Router({
       component: Register
     },
     {
-      path: '/ping',
-      name: 'Ping',
-      component: Ping,
+      path: '/checkpoints',
+      name: 'Checkpoints',
+      component: Checkpoints,
+    },
+    {
+      path: '/scan-url',
+      name: 'Tester',
+      component: Tester,
     },
     {
       path: '*',

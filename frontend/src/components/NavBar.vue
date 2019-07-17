@@ -12,7 +12,10 @@
           <router-link class="nav-link" to="/register">Sign up</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="/ping">Ping</router-link>
+          <router-link class="nav-link" to="/checkpoints">Checkpoints</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/scan-url">Scan URL</router-link>
         </li>
       </b-navbar-nav>
 
@@ -20,7 +23,9 @@
       <b-navbar-nav class="ml-auto">
           <b-nav-item-dropdown right>
           <!-- Using 'button-content' slot -->
-            <template slot="button-content"><em>User</em></template>
+            <template slot="button-content">
+              <em>User</em>
+            </template>
             <b-dropdown-item href="#">Profile</b-dropdown-item>
             <b-dropdown-item href="#">Sign Out</b-dropdown-item>
           </b-nav-item-dropdown>

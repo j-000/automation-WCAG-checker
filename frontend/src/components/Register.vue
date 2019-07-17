@@ -68,6 +68,7 @@
         })
         .catch((e) => {
           this.error = true;
+          alert(e);
         });
       },
       resetForm(){
