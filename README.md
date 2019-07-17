@@ -1,6 +1,6 @@
 # Comphero  - WCAG website checker
 
-
+![](https://github.com/j-000/comphero/blob/master/repo/gifone.gif)
 
 Web Content Accessibility Guidelines (WCAG) is developed through the W3C process in cooperation with individuals and organizations around the world, with a goal of providing a single shared standard for web content accessibility that meets the needs of individuals, organizations, and governments internationally.
 
