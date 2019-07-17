@@ -31,3 +31,13 @@ Open http://localhost:8080 and voila!
 
 ## How it works
 
+Each checkpoint uses a specific regular expression to validate the html page. For example, the checkpoint "All pages should contain a title tag" uses the following regex: `(?s)(?i)<title\b[^>]*>[^<>]+?<\/title>`.
+
+New checkpoints can be added, but not without having to re-wire the Scanner class. Removing some hard coded defaults is something for a next iteration of this project.
+
+## Future ideas
+
+[ ] Use [Flask RESTful](https://flask-restful.readthedocs.io/en) to build the API
+[ ] Remove hard-coded defaults from Scanner class
+[ ] Add authentication logic
+...
