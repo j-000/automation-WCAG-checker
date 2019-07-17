@@ -37,7 +37,7 @@ New checkpoints can be added, but not without having to re-wire the Scanner clas
 
 ## Future ideas
 
-[ ] Use [Flask RESTful](https://flask-restful.readthedocs.io/en) to build the API
-[ ] Remove hard-coded defaults from Scanner class
-[ ] Add authentication logic
+- [ ] Use [Flask RESTful](https://flask-restful.readthedocs.io/en) to build the API
+- [ ] Remove hard-coded defaults from Scanner class
+- [ ] Add authentication logic
 ...
