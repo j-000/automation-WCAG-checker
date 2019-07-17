@@ -1,5 +1,7 @@
 # Comphero  - WCAG website checker
 
+
+
 Web Content Accessibility Guidelines (WCAG) is developed through the W3C process in cooperation with individuals and organizations around the world, with a goal of providing a single shared standard for web content accessibility that meets the needs of individuals, organizations, and governments internationally.
 
 This tool provides you with an easy way of validating your website acording to WCAG guidelines. 
