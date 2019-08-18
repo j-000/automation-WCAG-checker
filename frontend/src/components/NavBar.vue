@@ -9,13 +9,7 @@
           <router-link class="nav-link" to="/">Home</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="/register">Sign up</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/checkpoints">Checkpoints</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/scan-url">Scan URL</router-link>
+          <router-link class="nav-link" to="/scan">Scan URL</router-link>
         </li>
       </b-navbar-nav>
 

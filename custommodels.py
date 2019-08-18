@@ -1,7 +1,10 @@
 from sqlalchemy import desc, asc
 from flask_login import UserMixin
 from server import db
-
+import json
+import hashlib
+import datetime
+from random import randint
 
 '''
 User Class
@@ -77,3 +80,31 @@ class Checkpoint(db.Model):
             'regex':c.regex
             } for c in Checkpoint.query.all()]
         return checkpoints_array
+
+
+class Report(db.Model):
+  __tablename__ = 'reports'
+
+  id = db.Column(db.Integer, primary_key=True)
+  url = db.Column(db.Text())
+  results = db.Column(db.Text())
+  hashid = db.Column(db.String(200))
+
+  def __init__(self, url):
+    self.url = url
+    reportstring = f'{url}-{str(datetime.datetime.now())}-{randint(0, 1000)}'
+    self.hashid = hashlib.sha256(reportstring.encode('utf-8')).hexdigest()
+    return
+  
+  @staticmethod
+  def fetch(reportid):
+    return Report.query.filter_by(hashid=reportid).first()
+  
+  def update_results(self, results):
+    self.results = results
+    db.session.add(self)
+    db.session.commit()
+    return self
+
+  def get_json_results(self):
+    return json.loads(self.results.replace("'",'"'))

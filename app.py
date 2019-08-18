@@ -1,4 +1,4 @@
-from server import app
+from server import app, api
 from flask import jsonify, request
 from flask_login import LoginManager
 from custommodels import User, Checkpoint
@@ -22,6 +22,14 @@ def load_user(user_id):
 @login_manager.unauthorized_handler
 def unauthorized():
   return jsonify({'error': 'You must login first in order to access that route.'})
+
+
+from apimodels import (Scan, ScannReports)
+base_api_url = '/api/v1'
+api.add_resource(Scan, f'{base_api_url}/scans')
+api.add_resource(ScannReports, f'{base_api_url}/reports/<reportid>')
+
+
 
 
 @app.route('/api/register', methods=['POST'])
@@ -77,8 +85,8 @@ def checkpoints():
     return jsonify({'checkpoints':all_checkpoints})
 
 
-@app.route('/api/scan', methods=['POST'])
-def scan():
+@app.route('/api/scann', methods=['POST'])
+def scann():
     # Get request data
     request_data = request.get_json()
     if request_data:

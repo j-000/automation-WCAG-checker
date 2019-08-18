@@ -2,12 +2,11 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 
-import Home from './components/Home.vue';
-import Checkpoints from './components/Checkpoints.vue';
-import NotFound from './components/NotFound.vue';
-import Register from './components/Register.vue';
-import Tester from './components/Tester.vue';
 
+import RunScan from './views/RunScan';
+import NotFound from './views/NotFound';
+import Home from './views/Home';
+import ReportView from './views/ReportView';
 
 
 Vue.use(Router);
@@ -17,27 +16,22 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '',
-      name: 'Home',
+      path: '/',
+      name:'Home',
       component: Home
     },
     {
-      path: '/register',
-      name: 'Register',
-      component: Register
+      path: '/scan',
+      name: 'RunScan',
+      component: RunScan
     },
     {
-      path: '/checkpoints',
-      name: 'Checkpoints',
-      component: Checkpoints,
+      path: '/reports/:reportid',
+      name: 'Report',
+      component: ReportView
     },
     {
-      path: '/scan-url',
-      name: 'Tester',
-      component: Tester,
-    },
-    {
-      path: '*',
+      path: '/*',
       name: 'NotFound',
       component: NotFound
     }

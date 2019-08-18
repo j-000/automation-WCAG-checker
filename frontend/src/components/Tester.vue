@@ -3,50 +3,16 @@
     <div class="col text-left">
       <h1>Scan a website</h1>
       <b-form @submit="runTester">
-        <b-form-group id="input-group-1" label="URL" label-for="input-1">
-          <p>Only one page is scanned. To scan multiple pages, you need to run the scan for each page individually.</p>
-          <b-form-input
-          id="input-1"
-          v-model="form.url"
-          type="text"
-          required
-          ></b-form-input>
+        <b-form-group id="input-group-1">
+          <p>Once your scan finishes, you will receive an email with a unique link to view your report.</p>
+          <b-form-input id="input-1" v-model="form.url" type="text" placeholder="URL" required></b-form-input>
+          <br>
+          <b-form-input id="input-2" v-model="form.email" type="text" placeholder="Email"></b-form-input>
         </b-form-group>
         <b-button type="submit" variant="success">Scan</b-button>
       </b-form>
       <br>
-      <div class="alert-danger alert" v-if="error">
-        {{ error }}
-      </div>
-    </div>
-    <div class="col text-left">
-      <h1>Results table</h1>
-      <div class="result">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Checkpoint</th>
-              <th>Result</th>
-              <th>More info</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-            v-for="result in results"
-            v-bind:key="result.id"
-            >
-              <td>{{ result.id }} - {{ result.info.name }}</td>
-              <td>
-                <span class="badge" 
-                v-bind:class="{'badge-success': result.info.result == 'passed', 'badge-danger': result.info.result == 'failed'}">
-                {{ result.info.result }}
-                </span>
-              </td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div :class="message.level" >{{ message.text }}</div>
     </div>
   </div>
 </template>
@@ -54,26 +20,29 @@
 <script>
 import axios from 'axios';
 export default {
-  
+  name: 'Tester',
   data(){
     return {
       form:{
-        url:''
+        url:'',
+        email: ''
       }, 
-      results: [],
-      error: false
+      message: {}
     }
   },
   methods:{
     runTester(evt){
-      const path = 'http://localhost:5000/api/scan';
+      const path = 'http://localhost:5000/api/v1/scans';
       evt.preventDefault();
       axios.post(path, {
-        url: this.form.url
+        url: this.form.url,
+        email: this.form.email
       })
       .then((res) => {
-        this.results = res.data.results;
-        this.error = res.data.error;
+        this.message = {level:res.data.level, text:res.data.message}
+        setTimeout(() => {
+          this.message = {}
+        }, 1000)
       })
       .catch((e) => {
         alert(e);
