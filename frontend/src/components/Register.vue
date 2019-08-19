@@ -38,6 +38,8 @@
 
 <script>
   import axios from 'axios';
+  import * as g from '../../vue.config';
+
   export default {
     data() {
       return {
@@ -55,7 +57,7 @@
       onSubmit(evt) {
         evt.preventDefault()
         const data = this.form;
-        const path = 'http://localhost:5000/api/register';
+        const path = `${g.api_url}/api/register`;
         
         axios.post(path, {
           name: data.name,

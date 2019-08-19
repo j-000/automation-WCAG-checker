@@ -19,6 +19,9 @@
 
 <script>
 import axios from 'axios';
+import * as g from '../../vue.config';
+
+
 export default {
   name: 'Tester',
   data(){
@@ -32,7 +35,7 @@ export default {
   },
   methods:{
     runTester(evt){
-      const path = 'http://localhost:5000/api/v1/scans';
+      const path = `${g.api_url}/api/v1/scans`;
       evt.preventDefault();
       axios.post(path, {
         url: this.form.url,
