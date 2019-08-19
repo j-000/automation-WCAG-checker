@@ -22,4 +22,4 @@ db = SQLAlchemy(app)
 Migrate(app, db)
 
 
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+cors = CORS(app, resources={r"/*": {"origins": ["https://www.allgreencode.com", "http://localhost:8080", "http://localhost:5000", "http://allgreencode.s3-website.eu-west-2.amazonaws.com"]}})

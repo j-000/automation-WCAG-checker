@@ -57,7 +57,7 @@
       onSubmit(evt) {
         evt.preventDefault()
         const data = this.form;
-        const path = `${g.api_url}/api/register`;
+        const path = `http://3.9.176.237/api/register`;
         
         axios.post(path, {
           name: data.name,

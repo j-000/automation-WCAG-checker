@@ -6,7 +6,6 @@
 
 <script>
 import axios from 'axios';
-import * as g from '../../vue.config';
 
 export default {
     name: 'ReportView',
@@ -17,7 +16,7 @@ export default {
     },
     methods: {
         fetch(){
-            const url = `${g.api_url}/api/v1/reports/${this.$route.params.reportid}`
+            const url = `http://3.9.176.237/api/v1/reports/${this.$route.params.reportid}`
             axios.get(url)
             .then(res=>{
                 this.report = res.data

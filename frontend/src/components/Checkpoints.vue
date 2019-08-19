@@ -89,8 +89,6 @@
 
 <script>
 import axios from 'axios';
-import * as g from '../../vue.config';
-
 
 export default {
     data(){
@@ -110,7 +108,7 @@ export default {
     },
     methods: {
         getCheckpoints(){
-            const BASE_URL = `${g.api_url}/api`;
+            const BASE_URL = `http://3.9.176.237/api`;
             const path =  `${BASE_URL}/checkpoints`;
             axios.get(path)
             .then((res) => {
@@ -129,7 +127,7 @@ export default {
         },
         addCheckpoint(evt){
           evt.preventDefault();
-          const path = `${g.api_url}/api/checkpoints`;
+          const path = `http://3.9.176.237/api/checkpoints`;
           axios.post(path, {
             id: this.form.id,
             name: this.form.name,
