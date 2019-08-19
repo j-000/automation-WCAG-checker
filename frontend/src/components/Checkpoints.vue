@@ -89,6 +89,7 @@
 
 <script>
 import axios from 'axios';
+import url from '../main';
 
 export default {
     data(){
@@ -108,7 +109,7 @@ export default {
     },
     methods: {
         getCheckpoints(){
-            const BASE_URL = `http://3.9.176.237/api`;
+            const BASE_URL = `${url.url}/api`;
             const path =  `${BASE_URL}/checkpoints`;
             axios.get(path)
             .then((res) => {
@@ -127,7 +128,7 @@ export default {
         },
         addCheckpoint(evt){
           evt.preventDefault();
-          const path = `http://3.9.176.237/api/checkpoints`;
+          const path = `${url.url}/api/checkpoints`;
           axios.post(path, {
             id: this.form.id,
             name: this.form.name,

@@ -4,20 +4,32 @@ import requests
 from Scanner import Scanner
 from custommodels import Report
 from threading import Thread
-
+from server import app
+from emailer import sendemail
+import datetime
 
 threads = []
 
 
-def initializescan(url):
-    print(url)
+def initializescan(url, email):
     report = Report(url)
     scanner = Scanner()
-    results = scanner.scan(url)
+    try:
+        results = scanner.scan(url)
+        report.update_results(str(results))
+    except Exception as e:
+        report.update_results(str(e))
 
-    # TODO: send EMAIL with LINK to report results
-    
-    report.update_results(str(results))
+    with app.app_context():
+        emailtext = f'''
+        Your report is ready.\n
+        Simply follow the link below to see your website's results.
+        \n\n
+        http://allgreencode.s3-website.eu-west-2.amazonaws.com/reports/{report.hashid}
+        \n\n
+        www.allgreencode.com
+        '''
+        sendemail(f'Your scan is ready! - {str(datetime.datetime.today())}', recipients=[email], email_text=emailtext)    
     return
 
 
@@ -35,7 +47,7 @@ class Scan(Resource):
             return jsonify({'message':'Url parameter missing.', 'level':'text-danger'})
         if not email:
             return jsonify({'message':'Email parameter missing.', 'level':'text-danger'})
-        t = Thread(target=initializescan, kwargs={'url':url})
+        t = Thread(target=initializescan, kwargs={'url':url, 'email':email})
         t.start()
         threads.append(t)
         return jsonify({'message':'Scan started. You will receive an email with a unique link to your results.', 'level':'text-success'})

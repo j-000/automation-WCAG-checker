@@ -19,7 +19,7 @@
 
 <script>
 import axios from 'axios';
-
+import url from '../main';
 
 export default {
   name: 'Tester',
@@ -34,7 +34,7 @@ export default {
   },
   methods:{
     runTester(evt){
-      const path = `http://3.9.176.237/api/v1/scans`;
+      const path = `${url.url}/api/v1/scans`;
       evt.preventDefault();
       axios.post(path, {
         url: this.form.url,

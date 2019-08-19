@@ -14,3 +14,11 @@ new Vue({
   router,
   render: h => h(App),
 }).$mount('#app')
+
+
+let url = 'http://3.9.176.237';
+// let url = 'http://localhost:5000';
+
+export default {
+  url
+}
