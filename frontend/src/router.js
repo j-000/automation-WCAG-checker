@@ -8,7 +8,6 @@ import NotFound from './views/NotFound';
 import Home from './views/Home';
 import ReportView from './views/ReportView';
 
-
 Vue.use(Router);
 
 export default new Router({
@@ -23,12 +22,18 @@ export default new Router({
     {
       path: '/scan',
       name: 'RunScan',
-      component: RunScan
+      component: RunScan,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/reports/:reportid',
       name: 'Report',
-      component: ReportView
+      component: ReportView,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/*',

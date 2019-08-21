@@ -1,12 +1,14 @@
 from flask_restful import Resource
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 import requests
 from Scanner import Scanner
-from custommodels import Report
+from custommodels import Report, User
 from threading import Thread
 from server import app
 from emailer import sendemail
 import datetime
+from decorators import jwt_required
+import hashlib
 
 threads = []
 
@@ -76,3 +78,40 @@ class ScannReports(Resource):
     
     def delete(self, reportid):
         return
+
+'''/api/v1/authenticate'''
+class Authentication(Resource):
+
+  @jwt_required
+  def get(self):
+    return jsonify({'verified':True})
+  
+  def post(self):
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    if not email:
+      return jsonify({'message':'Email parameter can\'t be empty.', 'success':False})
+    if not password:
+      return jsonify({'message':'Password parameter can\'t be empty.', 'success':False})
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+      return jsonify({'message':'User is not registered.', 'success':False})
+
+    verify_password = user.check_password(password_to_compare=password)
+    if verify_password:
+      token = user.generate_session_token()
+      # sid = f'{token}{datetime.datetime.now()}'
+      # sid = hashlib.sha256(sid.encode('utf-8')).hexdigest()
+      # user.add_sid(sid)
+      return jsonify({'user':user.name, 'token':token, 'expires':'3600'})
+    else:
+      return jsonify({'message':'Password verification failed.', 'success':False})
+      
+  
+  def put(self):
+    return
+  
+  def delete(self):
+    return
