@@ -105,7 +105,7 @@ class Authentication(Resource):
       # sid = f'{token}{datetime.datetime.now()}'
       # sid = hashlib.sha256(sid.encode('utf-8')).hexdigest()
       # user.add_sid(sid)
-      return jsonify({'user':user.name, 'token':token, 'expires':'3600'})
+      return jsonify({'user':user.name, 'token':token, 'expires':'3600', 'success':True})
     else:
       return jsonify({'message':'Password verification failed.', 'success':False})
       

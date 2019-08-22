@@ -2,21 +2,25 @@
   <div>
     <h1>Home</h1>
     <form action="/authenticate" @submit="doLogin">
-    <input v-model="email" type="text" placeholder="Email"><br>
-    <input v-model="password" type="password" name="password" id="password"><br>
-    <input type="submit" value="Login">
+      <input v-model="email" type="text" placeholder="Email"><br>
+      <input v-model="password" type="password" name="password" id="password"><br>
+      <input type="submit" value="Login">
     </form>
+    <p>{{ loginmessage }}</p>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import store from '../store';
+
 export default {
   name: 'Home',
   data(){
     return {
       email: '',
-      password:''
+      password:'',
+      loginmessage: '',
     }
   },
   methods:{
@@ -28,8 +32,12 @@ export default {
         password: this.password
       })
       .then(res =>{
-        localStorage.setItem('token', res.data.token);
-        this.$router.push('/scan')
+        if(res.data.success){
+          localStorage.setItem('token', res.data.token);
+          store.commit('login');
+          this.$router.push('/scan');
+        }
+        this.loginmessage = res.data.message;
       })
       .catch(e=>{
         alert(e);
