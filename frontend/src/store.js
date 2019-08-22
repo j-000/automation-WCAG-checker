@@ -13,7 +13,7 @@ const store = new Vuex.Store({
         login(state, token){
             state.token = token
             state.loggedIn = true
-            state.auth_header = {'Authorization': `Bearer ${state.token}`}
+            state.auth_header = {'Authorization': `Bearer ${token}`}
         },
         logout(state){
             state.token = null

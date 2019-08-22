@@ -24,10 +24,11 @@ def unauthorized():
   return jsonify({'error': 'You must login first in order to access that route.'})
 
 
-from apimodels import (Scan, ScannReports, Authentication)
+from apimodels import (Scan, ScanReport, UserReports, Authentication)
 base_api_url = '/api/v1'
 api.add_resource(Scan, f'{base_api_url}/scans')
-api.add_resource(ScannReports, f'{base_api_url}/reports/<reportid>')
+api.add_resource(UserReports, f'{base_api_url}/user/<userid>/reports')
+api.add_resource(ScanReport, f'{base_api_url}/reports/<reportid>')
 api.add_resource(Authentication, f'{base_api_url}/authenticate')
 
 

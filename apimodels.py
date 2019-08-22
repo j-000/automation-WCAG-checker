@@ -61,9 +61,30 @@ class Scan(Resource):
         return
 
 
-'''/api/v1/reports/<reportid>'''
-class ScannReports(Resource):
+'''/api/v1/user/<userid>/reports'''
+class UserReports(Resource):
 
+  @jwt_required
+  def get(self, userid):
+      return
+
+  @jwt_required  
+  def post(self, userid):
+      return
+
+  @jwt_required  
+  def put(self, userid):
+      return
+
+  @jwt_required  
+  def delete(self, userid):
+      return
+
+
+'''/api/v1/reports/<reportid>'''
+class ScanReport(Resource):
+
+    @jwt_required
     def get(self, reportid):
         report = Report.fetch(reportid)
         if report:
@@ -102,9 +123,6 @@ class Authentication(Resource):
     verify_password = user.check_password(password_to_compare=password)
     if verify_password:
       token = user.generate_session_token()
-      # sid = f'{token}{datetime.datetime.now()}'
-      # sid = hashlib.sha256(sid.encode('utf-8')).hexdigest()
-      # user.add_sid(sid)
       return jsonify({'user':user.name, 'token':token, 'expires':'3600', 'success':True})
     else:
       return jsonify({'message':'Password verification failed.', 'success':False})

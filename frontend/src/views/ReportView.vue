@@ -1,5 +1,6 @@
 <template>
     <div>
+        <a href="#" @click="fetch">fetch</a>
         <p>{{ report }}</p>
     </div>
 </template>
@@ -7,6 +8,7 @@
 <script>
 import axios from 'axios';
 import url from '../main';
+import store from '../store';
 
 export default {
     name: 'ReportView',
@@ -19,7 +21,11 @@ export default {
     methods: {
         fetch(){
             const url = `${this.url}/api/v1/reports/${this.$route.params.reportid}`
-            axios.get(url)
+            // eslint-disable-next-line
+            console.log(store.getters.getstate.loggedId)
+            axios.get(url, {
+                headers: {'Authorization' : 'Bearer ' + store.getters.getstate.token}
+            })
             .then(res=>{
                 this.report = res.data
             })
@@ -28,8 +34,8 @@ export default {
             })
         }
     },
-    created(){
-        this.fetch();
-    }
+    // created(){
+    //     this.fetch();
+    // }
 }
 </script>
