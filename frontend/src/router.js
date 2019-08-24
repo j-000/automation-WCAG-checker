@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-
-
 import RunScan from './views/RunScan';
 import NotFound from './views/NotFound';
 import Home from './views/Home';
 import ReportView from './views/ReportView';
+import ListReports from './views/ListReports';
+import Registration from './views/Registration';
 
 Vue.use(Router);
 
@@ -16,12 +16,17 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name:'Home',
+      name:'home',
       component: Home
     },
     {
+      path: '/register',
+      name:'register',
+      component: Registration
+    },
+    {
       path: '/scan',
-      name: 'RunScan',
+      name: 'scan',
       component: RunScan,
       meta: {
         requiresAuth: true
@@ -29,15 +34,31 @@ export default new Router({
     },
     {
       path: '/reports/:reportid',
-      name: 'Report',
+      name: 'report-details',
       component: ReportView,
+      props:true,
+      meta: {
+        requiresAuth: true
+      }
+    }, {
+      path: '/reports/',
+      name: 'reports',
+      component: ListReports,
       meta: {
         requiresAuth: true
       }
     },
     {
-      path: '/*',
-      name: 'NotFound',
+      path: '/logout',
+      name: 'logout',
+      component: Home,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '*',
+      name: 'not-found',
       component: NotFound
     }
   ],

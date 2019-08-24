@@ -7,7 +7,7 @@ from threading import Thread
 from server import app
 from emailer import sendemail
 import datetime
-from decorators import jwt_required
+from decorators import jwt_required, admins_only
 import hashlib
 
 threads = []
@@ -41,6 +41,7 @@ class Scan(Resource):
     def get(self):
         return jsonify({'threads': [{'name':t.name, 'alive':t.is_alive()}  for t in threads]})
     
+    @jwt_required
     def post(self):
         data = request.get_json()
         url = data.get('url')
@@ -66,7 +67,12 @@ class UserReports(Resource):
 
   @jwt_required
   def get(self, userid):
-      return
+    try:
+      user = User.query.filter_by(id=int(userid)).first()
+    except Exception as e:
+      return jsonify({'message':'Invalid user id.', 'success':False})
+
+    return
 
   @jwt_required  
   def post(self, userid):
@@ -106,6 +112,7 @@ class Authentication(Resource):
   @jwt_required
   def get(self):
     return jsonify({'verified':True})
+    
   
   def post(self):
     data = request.get_json()
@@ -123,13 +130,45 @@ class Authentication(Resource):
     verify_password = user.check_password(password_to_compare=password)
     if verify_password:
       token = user.generate_session_token()
-      return jsonify({'user':user.name, 'token':token, 'expires':'3600', 'success':True})
+      return jsonify({'user':{'name':user.name, 'id': user.id}, 'token':token, 'expires':'3600', 'success':True, 'message':f'Welcome, {user.name}'})
     else:
       return jsonify({'message':'Password verification failed.', 'success':False})
       
-  
+  @jwt_required
   def put(self):
     return
   
+  @jwt_required
   def delete(self):
     return
+
+''' /api/v1/register'''
+class Register(Resource):
+  
+  @admins_only
+  @jwt_required
+  def get(self):
+    return jsonify({'m':'you are admin'})
+
+  def post(self):
+    data = request.get_json()
+    print(data)
+    if not data:
+      return jsonify({'message':'Missing json data.', 'success':False})
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not name:
+      return jsonify({'message':'Name field is required.', 'success':False})
+    if not email:
+      return jsonify({'message':'Email field is required.', 'success':False})
+    if not password:
+      return jsonify({'message':'Password field is required.', 'success':False})
+
+    already_registered = User.exists(email)
+    if already_registered:
+      return jsonify({'message': 'That email is already registered.'})          
+    User(name, email, password)
+    user = User.fetch(email=email)
+    return jsonify({'message':'You have successfully registered.', 'success':True, 'user': {'id': user.id, 'name':user.name}})

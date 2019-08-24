@@ -2,6 +2,17 @@ from functools import wraps
 from flask import request, jsonify
 from custommodels import User
 
+def admins_only(f):
+  @wraps(f)
+  def wrapper(*args, **kwargs):
+    auth_token = request.headers.get('Authorization').split()[1]
+    user = User.decode_token(auth_token)
+    if not user.is_admin:
+      return jsonify({'success':False, 'message':'This is only available to admins.'})
+    return f(*args, **kwargs)
+    
+  return wrapper
+
 
 def jwt_required(f):
   @wraps(f)
@@ -22,13 +33,8 @@ def jwt_required(f):
     # deline if no user found with the payload data (email)
     if not user:
         return jsonify({'message':'Invalid or expired token.', 'success':False})
-    # verify if the token is valid for the user found:
-    # when loggin in the token is set in the user model along with sid
-    validtoken = user.verify_session_token(auth_token)
-    # decline if the token is not valid for the user
-    if not validtoken:
-        return jsonify({'message':'Invalid or expired token','success':False})
-    # ALL CLEAR
+    # A user was found with the token so all is good. 
+    # (yes, someone can use someone else's token, but how would they get it?)
     return f(*args, **kwargs)
     
   return wrapper

@@ -3,7 +3,7 @@ import App from './App.vue'
 import BootstrapVue from 'bootstrap-vue'
 import router from './router';
 import VueCookies from 'vue-cookies';
-import axios from 'axios';
+import ApiService from './services/ApiService';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -17,29 +17,24 @@ router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)){
     const token = localStorage.getItem('token');
     if(token){
-      const path = 'http://localhost:5000/api/v1/authenticate';
-      axios.get(path, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      .then(res=>{
-        if(res.data.verified){
-          store.commit('login');
-          next()
-        }else{
-          store.commit('logout');
+      ApiService.verify(token)
+        .then(res=>{
+          if(res.data.verified){
+            store.dispatch('doLogin');
+            next()
+          }else{
+            store.dispatch('doLogout');
+            next('/')
+          }
+        })
+        .catch(e=>{
+          // eslint-disable-next-line
+          console.log(e);
+          store.dispatch('doLogout');
           next('/')
-        }
-      })
-      .catch(e=>{
-        // eslint-disable-next-line
-        console.log(e);
-        store.commit('logout');
-        next('/')
-      })
+        })
     }else{
-      store.commit('logout');
+      store.dispatch('doLogout');
       next('/')
     }
   }else{
@@ -49,12 +44,10 @@ router.beforeEach((to, from, next) => {
 
 new Vue({
   router,
+  store,
   render: h => h(App),
 }).$mount('#app')
 
 
-let url = 'http://localhost:5000';
-
 export default {
-  url
 }

@@ -1,43 +1,52 @@
 <template>
   <div>
-    <h1>Home</h1>
-    <form action="/authenticate" @submit="doLogin">
-      <input v-model="email" type="text" placeholder="Email"><br>
-      <input v-model="password" type="password" name="password" id="password"><br>
-      <input type="submit" value="Login">
-    </form>
-    <p>{{ loginmessage }}</p>
+    <!-- Profile -->
+    <div class="row" v-if="isloggedin">
+      <div class="col">
+        <h1>Hi, {{ user.name }}.</h1>
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div v-if="!isloggedin" class="row">
+      <div class="col-6 m-auto text-left">
+        <h1>Login</h1>
+        <form  action="/authenticate" @submit.prevent="doLogin">
+          <input v-model="email" class="form-control" type="text" placeholder="Email"><br>
+          <input v-model="password" type="password" class="form-control" name="password" id="password"><br>
+          <input type="submit" value="Login" class="btn btn-success">
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import store from '../store';
+import ApiService from '../services/ApiService';
+import { mapState } from 'vuex';
 
 export default {
-  name: 'Home',
+  name:'Home',
   data(){
     return {
       email: '',
-      password:'',
-      loginmessage: '',
+      password:''
     }
   },
+  computed: mapState({
+    user: state => state.user,
+    isloggedin: state => state.loggedIn 
+  }),
   methods:{
-    doLogin(e){
-      e.preventDefault();
-      const path = 'http://localhost:5000/api/v1/authenticate';
-      axios.post(path, {
-        email: this.email,
-        password: this.password
-      })
+    doLogin(){
+      ApiService.authenticate(this.email,this.password)
       .then(res =>{
         if(res.data.success){
           localStorage.setItem('token', res.data.token);
-          store.commit('login');
-          this.$router.push('/scan');
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+          this.$store.dispatch('doLogin');
         }
-        this.loginmessage = res.data.message;
+        this.$store.dispatch('alertUser', res.data)
       })
       .catch(e=>{
         alert(e);

@@ -2,31 +2,33 @@
   <div class="row">
     <div class="col-6 m-auto text-left">
       <h1>Register</h1>
-      <div class="alert" v-if="response" v-bind:class="{ 'alert-success': success, 'alert-danger': error  }">
-        <p>{{ response }}</p>
-      </div>
-      <b-form @submit="onSubmit" v-if="show">
-        <b-form-group
-          id="input-group-1"
-          label="Email address"
-          label-for="input-1"
-          description="We'll never share your email with anyone else."
-        >
+      
+      <b-form @submit.prevent="sendRegistraion">
+        <b-form-group>
           <b-form-input
             id="input-1"
             v-model="form.email"
             type="email"
             required
-            placeholder="Enter email"
+            placeholder="Email"
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-2" label="Your name" label-for="input-2">
+        <b-form-group>
           <b-form-input
             id="input-2"
             v-model="form.name"
             required
-            placeholder="Enter name"
+            placeholder="Name"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group>
+          <b-form-input
+            id="input-3"
+            v-model="form.password"
+            type="password"
+            required
           ></b-form-input>
         </b-form-group>
 
@@ -37,48 +39,40 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import url from '../main';
-
+import ApiService from '../services/ApiService';
   export default {
     data() {
       return {
         form: {
           email: '',
-          name: ''
+          name: '',
+          password: ''
         },
-        show: true,
-        response: false,
         success: false,
-        error: false
+        response: false
       }
     },
     methods: {
-      onSubmit(evt) {
-        evt.preventDefault()
-        const data = this.form;
-        const path = `${url.url}/api/register`;
-        
-        axios.post(path, {
-          name: data.name,
-          email: data.email
-        })
-        .then((res) => {
-          this.response = res.data;
-          this.error = true;
-          if(this.response.success){
-            this.success = true;
+      sendRegistraion() {
+        ApiService.registerUser({name:this.form.name, email: this.form.email, password: this.form.password})
+          .then(response => {
+            this.response = true
+            if(response.data.success){
+              this.success = true
+              this.$router.push('/')
+            }
+            this.$store.dispatch('alertUser', response.data)
             this.resetForm();
-          }
-        })
-        .catch((e) => {
-          this.error = true;
-          alert(e);
-        });
+          })
+          .catch(e => {
+            // eslint-disable-next-line
+            console.log(e)
+          })
       },
       resetForm(){
         this.form.name = '';
         this.form.email = '';
+        this.form.password = '';
       }
     }
   }

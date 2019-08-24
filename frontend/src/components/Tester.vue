@@ -6,8 +6,6 @@
         <b-form-group id="input-group-1">
           <p>Once your scan finishes, you will receive an email with a unique link to view your report.</p>
           <b-form-input id="input-1" v-model="form.url" type="text" placeholder="URL" required></b-form-input>
-          <br>
-          <b-form-input id="input-2" v-model="form.email" type="text" placeholder="Email"></b-form-input>
         </b-form-group>
         <b-button type="submit" variant="success">Scan</b-button>
       </b-form>
@@ -20,14 +18,14 @@
 <script>
 import axios from 'axios';
 import url from '../main';
+import store from '../store';
 
 export default {
   name: 'Tester',
   data(){
     return {
       form:{
-        url:'',
-        email: ''
+        url:''
       }, 
       message: {}
     }
@@ -37,8 +35,10 @@ export default {
       const path = `${url.url}/api/v1/scans`;
       evt.preventDefault();
       axios.post(path, {
-        url: this.form.url,
-        email: this.form.email
+        url: this.form.url},{
+        headers: {
+          'Authorization': `Bearer ${store.getters.getstate.token}`
+        }
       })
       .then((res) => {
         this.message = {level:res.data.level, text:res.data.message}

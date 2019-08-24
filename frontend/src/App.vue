@@ -2,6 +2,7 @@
   <div id="app">
     <NavBar />
     <div class="m-5">
+      <Alerts v-if="getUserAlert" :alertobject="getUserAlert"/>
       <router-view/>
     </div>
   </div>
@@ -9,13 +10,19 @@
 
 <script>
 
-import NavBar from './components/NavBar.vue'
-
+import NavBar from './components/NavBar';
+import Alerts from './components/Alerts';
 
 export default {
   name: 'app',
   components: {
-    NavBar
+    NavBar,
+    Alerts
+  },
+  computed:{
+    getUserAlert(){
+      return this.$store.getters.getstate.alert
+    }
   }
 }
 </script>

@@ -20,15 +20,16 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(25), nullable=False)
     email = db.Column(db.String(50), nullable=False)
+    is_admin = db.Column(db.Boolean(), default=False)
     password = db.Column(db.Text(), nullable=False)
     token = db.Column(db.Text())
+    reports = db.relationship('Report', backref='user', lazy=True)
 
     def __repr__(self):
         return '{id} - {name}'.format(id=self.id, name=self.name)
     
     def __init__(self, name, email, password):
-        exists = User.query.filter_by(email=email).first()
-        if exists:
+        if self.exists(email):
             return
         self.name = name
         self.email = email
@@ -36,6 +37,15 @@ class User(db.Model, UserMixin):
         db.session.add(self)
         db.session.commit()
         return
+    
+    @staticmethod
+    def fetch(email=None, id=None):
+        if not email and not id:
+            raise 'Required params: Email or Id'
+        if email:
+            return User.query.filter_by(email=email).first()
+        if id:
+            return User.query.get(id)
 
     def check_password(self, password_to_compare):
         return check_password_hash(self.password, password_to_compare)
@@ -64,14 +74,6 @@ class User(db.Model, UserMixin):
         if not usertoken:
             return False
         return usertoken
-
-    def verify_session_token(self, token):
-        usertoken = self.decode_token(token)
-        if usertoken.id != self.id:
-            return False
-        if self.token != token:
-            return False
-        return True
 
     def delete_token(self):
         self.token = None
@@ -137,11 +139,13 @@ class Report(db.Model):
   url = db.Column(db.Text())
   results = db.Column(db.Text())
   hashid = db.Column(db.String(200))
+  userid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-  def __init__(self, url):
+  def __init__(self, url, userid):
     self.url = url
     reportstring = f'{url}-{str(datetime.datetime.now())}-{randint(0, 1000)}'
     self.hashid = hashlib.sha256(reportstring.encode('utf-8')).hexdigest()
+    self.userid = userid
     return
   
   @staticmethod

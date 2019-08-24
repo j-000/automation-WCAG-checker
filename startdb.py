@@ -1,4 +1,4 @@
-from custommodels import Checkpoint, db
+from custommodels import Checkpoint, db, User
 
 def populate_db():
 
@@ -16,10 +16,15 @@ def populate_db():
         Checkpoint(r[0], r[1], wcaglevels, benefits, r[2])
     return
 
+def create_admin():
+    User('admin', 'admin@admin.com', 'admin')
+    return
+
 
 if __name__ == "__main__":
     try:
         populate_db()
+        create_admin()
         print('Database restarted and populated!')
     except BaseException as e:
         print(f'Something went wrong here. [The error] -> {e}')
