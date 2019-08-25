@@ -45,14 +45,16 @@ class Scan(Resource):
     def post(self):
         data = request.get_json()
         url = data.get('url')
-        email = data.get('email')
         if not url:
             return jsonify({'message':'Url parameter missing.', 'level':'text-danger'})
-        if not email:
-            return jsonify({'message':'Email parameter missing.', 'level':'text-danger'})
-        t = Thread(target=initializescan, kwargs={'url':url, 'email':email})
-        t.start()
-        threads.append(t)
+        
+        token = request.headers.get('Authorization').split()[1]
+        user = User.decode_token(token)
+        Report(url, user.id)
+        
+        # t = Thread(target=initializescan, kwargs={'url':url, 'email':email})
+        # t.start()
+        # threads.append(t)
         return jsonify({'message':'Scan started. You will receive an email with a unique link to your results.', 'level':'text-success'})
     
     def put(self):
@@ -72,7 +74,7 @@ class UserReports(Resource):
     except Exception as e:
       return jsonify({'message':'Invalid user id.', 'success':False})
 
-    return
+    return jsonify({'reports': [f'{r.id}' for r in user.reports]})
 
   @jwt_required  
   def post(self, userid):
@@ -106,23 +108,38 @@ class ScanReport(Resource):
     def delete(self, reportid):
         return
 
+
+
+
+
+
+
+
 '''/api/v1/authenticate'''
 class Authentication(Resource):
 
   @jwt_required
-  def get(self):
+  def get(self, token, user):
+    '''
+    Verify session
+    '''
+    # token and user are received from the decorator
+    if user.token != token:
+      return jsonify({'message':'You are not logged in.', 'success':False})
     return jsonify({'verified':True})
     
-  
   def post(self):
+    '''
+    Login user
+    '''
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    if not email:
-      return jsonify({'message':'Email parameter can\'t be empty.', 'success':False})
-    if not password:
-      return jsonify({'message':'Password parameter can\'t be empty.', 'success':False})
     
+    for param, var in [('data',data),('email',email),('password',password)]:
+      if not var:
+        return jsonify({'message':f'{param} field is missing.', 'success':False})
+
     user = User.query.filter_by(email=email).first()
     if not user:
       return jsonify({'message':'User is not registered.', 'success':False})
@@ -130,7 +147,7 @@ class Authentication(Resource):
     verify_password = user.check_password(password_to_compare=password)
     if verify_password:
       token = user.generate_session_token()
-      return jsonify({'user':{'name':user.name, 'id': user.id}, 'token':token, 'expires':'3600', 'success':True, 'message':f'Welcome, {user.name}'})
+      return jsonify({'user':{'name':user.name, 'id': user.id, 'admin':user.is_admin}, 'token':token, 'expires':'3600', 'success':True, 'message':f'Welcome, {user.name}'})
     else:
       return jsonify({'message':'Password verification failed.', 'success':False})
       
@@ -139,36 +156,50 @@ class Authentication(Resource):
     return
   
   @jwt_required
-  def delete(self):
-    return
+  def delete(self, token, user):
+    # token and user are received from the decorator
+    if user.token != token:
+      return jsonify({'message':'You are not logged in.', 'success':False})
+    return jsonify({'message':'Logout complete', 'success':True, 'token':token})
+
+
 
 ''' /api/v1/register'''
 class Register(Resource):
   
-  @admins_only
   @jwt_required
   def get(self):
-    return jsonify({'m':'you are admin'})
+    return
 
   def post(self):
+    ''' 
+    Register new user. 
+    '''
     data = request.get_json()
-    print(data)
-    if not data:
-      return jsonify({'message':'Missing json data.', 'success':False})
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
 
-    if not name:
-      return jsonify({'message':'Name field is required.', 'success':False})
-    if not email:
-      return jsonify({'message':'Email field is required.', 'success':False})
-    if not password:
-      return jsonify({'message':'Password field is required.', 'success':False})
+    for param, var in [('data', data), ('name', name), ('email', email), ('password', password)]:
+      if not var:
+        return jsonify({'message': f'{param} field missing.', 'success':False})
 
     already_registered = User.exists(email)
     if already_registered:
-      return jsonify({'message': 'That email is already registered.'})          
+      return jsonify({'message': 'That email is already registered.', 'success':False})
+
     User(name, email, password)
     user = User.fetch(email=email)
-    return jsonify({'message':'You have successfully registered.', 'success':True, 'user': {'id': user.id, 'name':user.name}})
+    return jsonify({'message':'You have successfully registered.', 'success':True, 'token': user.generate_session_token()})
+
+  @jwt_required
+  def put(self):
+    return
+  
+  @jwt_required
+  def delete(self, token, user):
+    # token and user are received from the decorator
+    if user.token != token:
+      return jsonify({'message':'You are not logged in.', 'success':False})
+    User.delete(user)
+    return jsonify({'message':'Account deleted.', 'success':True})

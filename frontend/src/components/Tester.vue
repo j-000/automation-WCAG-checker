@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col text-left">
       <h1>Scan a website</h1>
-      <b-form @submit="runTester">
+      <b-form >
         <b-form-group id="input-group-1">
           <p>Once your scan finishes, you will receive an email with a unique link to view your report.</p>
           <b-form-input id="input-1" v-model="form.url" type="text" placeholder="URL" required></b-form-input>
@@ -16,9 +16,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-import url from '../main';
-import store from '../store';
 
 export default {
   name: 'Tester',
@@ -31,25 +28,7 @@ export default {
     }
   },
   methods:{
-    runTester(evt){
-      const path = `${url.url}/api/v1/scans`;
-      evt.preventDefault();
-      axios.post(path, {
-        url: this.form.url},{
-        headers: {
-          'Authorization': `Bearer ${store.getters.getstate.token}`
-        }
-      })
-      .then((res) => {
-        this.message = {level:res.data.level, text:res.data.message}
-        setTimeout(() => {
-          this.message = {}
-        }, 1000)
-      })
-      .catch((e) => {
-        alert(e);
-      })
-    }
+  
   }
 }
 </script>

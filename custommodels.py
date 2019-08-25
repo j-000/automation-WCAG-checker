@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     is_admin = db.Column(db.Boolean(), default=False)
     password = db.Column(db.Text(), nullable=False)
     token = db.Column(db.Text())
-    reports = db.relationship('Report', backref='user', lazy=True)
+    reports = db.relationship('Report', backref='user', lazy=True, cascade="all,delete")
 
     def __repr__(self):
         return '{id} - {name}'.format(id=self.id, name=self.name)
@@ -79,6 +79,21 @@ class User(db.Model, UserMixin):
         self.token = None
         db.session.add(self)
         db.session.commit()
+
+    @staticmethod
+    def delete(user):
+        db.session.delete(user)
+        db.session.commit()
+        return
+
+    @staticmethod
+    def get_user_from_token_in_header(request):
+        try:
+            token = request.headers.get('Authorization').split()[1]
+        except:
+            return False
+        user = User.decode_token(token)
+        return user
 
 
 '''
@@ -146,6 +161,8 @@ class Report(db.Model):
     reportstring = f'{url}-{str(datetime.datetime.now())}-{randint(0, 1000)}'
     self.hashid = hashlib.sha256(reportstring.encode('utf-8')).hexdigest()
     self.userid = userid
+    db.session.add(self)
+    db.session.commit()
     return
   
   @staticmethod
@@ -160,3 +177,4 @@ class Report(db.Model):
 
   def get_json_results(self):
     return json.loads(self.results.replace("'",'"'))
+

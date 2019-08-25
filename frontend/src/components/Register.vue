@@ -3,7 +3,7 @@
     <div class="col-6 m-auto text-left">
       <h1>Register</h1>
       
-      <b-form @submit.prevent="sendRegistraion">
+      <b-form @submit.prevent="register">
         <b-form-group>
           <b-form-input
             id="input-1"
@@ -39,7 +39,6 @@
 </template>
 
 <script>
-import ApiService from '../services/ApiService';
   export default {
     data() {
       return {
@@ -47,27 +46,15 @@ import ApiService from '../services/ApiService';
           email: '',
           name: '',
           password: ''
-        },
-        success: false,
-        response: false
+        }
       }
     },
     methods: {
-      sendRegistraion() {
-        ApiService.registerUser({name:this.form.name, email: this.form.email, password: this.form.password})
-          .then(response => {
-            this.response = true
-            if(response.data.success){
-              this.success = true
-              this.$router.push('/')
-            }
-            this.$store.dispatch('alertUser', response.data)
-            this.resetForm();
-          })
-          .catch(e => {
-            // eslint-disable-next-line
-            console.log(e)
-          })
+      register(){
+        this.$store.dispatch('register_user', this.form)
+        .then(()=>{
+          this.$router.push('/')
+        })
       },
       resetForm(){
         this.form.name = '';

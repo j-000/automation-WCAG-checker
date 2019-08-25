@@ -35,6 +35,5 @@ def jwt_required(f):
         return jsonify({'message':'Invalid or expired token.', 'success':False})
     # A user was found with the token so all is good. 
     # (yes, someone can use someone else's token, but how would they get it?)
-    return f(*args, **kwargs)
-    
+    return f(*args, **kwargs, token=auth_token, user=user)
   return wrapper

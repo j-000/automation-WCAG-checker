@@ -2,7 +2,7 @@
   <div id="app">
     <NavBar />
     <div class="m-5">
-      <Alerts v-if="getUserAlert" :alertobject="getUserAlert"/>
+      <Alerts v-for="alert in getUserAlert" :key="alert.message"  :alertobject="alert"/>
       <router-view/>
     </div>
   </div>

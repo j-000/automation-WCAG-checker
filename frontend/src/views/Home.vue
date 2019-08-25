@@ -2,8 +2,9 @@
   <div>
     <!-- Profile -->
     <div class="row" v-if="isloggedin">
-      <div class="col">
-        <h1>Hi, {{ user.name }}.</h1>
+      <div class="col text-left">
+        <h1>Hi, {{ user.name }}</h1>
+        <p><span class="badge badge-success" v-if="user.admin">Admin user</span><span v-else class="badge badge-info">Standard user</span></p>
       </div>
     </div>
 
@@ -22,7 +23,6 @@
 </template>
 
 <script>
-import ApiService from '../services/ApiService';
 import { mapState } from 'vuex';
 
 export default {
@@ -39,18 +39,7 @@ export default {
   }),
   methods:{
     doLogin(){
-      ApiService.authenticate(this.email,this.password)
-      .then(res =>{
-        if(res.data.success){
-          localStorage.setItem('token', res.data.token);
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-          this.$store.dispatch('doLogin');
-        }
-        this.$store.dispatch('alertUser', res.data)
-      })
-      .catch(e=>{
-        alert(e);
-      })
+      this.$store.dispatch('authenticate', {email: this.email, password: this.password})
     }
   }
 }

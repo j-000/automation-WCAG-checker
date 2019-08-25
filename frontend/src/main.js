@@ -17,10 +17,9 @@ router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)){
     const token = localStorage.getItem('token');
     if(token){
-      ApiService.verify(token)
+      ApiService.verify_token(token)
         .then(res=>{
           if(res.data.verified){
-            store.dispatch('doLogin');
             next()
           }else{
             store.dispatch('doLogout');
