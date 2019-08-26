@@ -2,7 +2,7 @@
   <div id="app">
     <NavBar />
     <div class="m-5">
-      <Alerts v-for="alert in getUserAlert" :key="alert.message"  :alertobject="alert"/>
+      <Alerts v-for="alert in getalerts" :key="alert.message"  :alertobject="alert"/>
       <router-view/>
     </div>
   </div>
@@ -12,6 +12,7 @@
 
 import NavBar from './components/NavBar';
 import Alerts from './components/Alerts';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'app',
@@ -19,11 +20,7 @@ export default {
     NavBar,
     Alerts
   },
-  computed:{
-    getUserAlert(){
-      return this.$store.getters.getstate.alert
-    }
-  }
+  computed:mapGetters(['getalerts'])
 }
 </script>
 

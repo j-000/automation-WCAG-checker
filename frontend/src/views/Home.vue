@@ -5,11 +5,11 @@
       <div class="col text-left">
         <h1>Hi, {{ user.name }}</h1>
         <p><span class="badge badge-success" v-if="user.admin">Admin user</span><span v-else class="badge badge-info">Standard user</span></p>
+        <p>You have {{ user.scan_quota }} more scans to use.</p>
       </div>
     </div>
-
     <!-- Login -->
-    <div v-if="!isloggedin" class="row">
+    <div v-else class="row">
       <div class="col-6 m-auto text-left">
         <h1>Login</h1>
         <form  action="/authenticate" @submit.prevent="doLogin">
@@ -40,6 +40,11 @@ export default {
   methods:{
     doLogin(){
       this.$store.dispatch('authenticate', {email: this.email, password: this.password})
+    }
+  },
+  created(){
+    if(this.$store.state.loggedIn){
+      this.$store.dispatch('update_user')
     }
   }
 }

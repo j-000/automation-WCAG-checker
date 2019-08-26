@@ -5,6 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_marshmallow import Marshmallow
 
 from applicationsecrets import SECRET_KEY, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS, SECURITY_PASSWORD_SALT
 
@@ -21,6 +22,6 @@ app.config['SECURITY_PASSWORD_SALT'] = SECURITY_PASSWORD_SALT
 
 db = SQLAlchemy(app)
 Migrate(app, db)
-
+ma = Marshmallow(app)
 
 cors = CORS(app, resources={r"/*": {"origins": ["http://localhost:8080", "http://localhost:5000"]}})

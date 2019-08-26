@@ -33,7 +33,7 @@ export default new Router({
       }
     },
     {
-      path: '/reports/:reportid',
+      path: '/reports/:hashid',
       name: 'report-details',
       component: ReportView,
       props:true,
@@ -41,7 +41,7 @@ export default new Router({
         requiresAuth: true
       }
     }, {
-      path: '/reports/',
+      path: '/reports',
       name: 'reports',
       component: ListReports,
       meta: {

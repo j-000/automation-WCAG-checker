@@ -3,7 +3,6 @@ import App from './App.vue'
 import BootstrapVue from 'bootstrap-vue'
 import router from './router';
 import VueCookies from 'vue-cookies';
-import ApiService from './services/ApiService';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -17,21 +16,12 @@ router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)){
     const token = localStorage.getItem('token');
     if(token){
-      ApiService.verify_token(token)
-        .then(res=>{
-          if(res.data.verified){
-            next()
-          }else{
-            store.dispatch('doLogout');
-            next('/')
-          }
-        })
-        .catch(e=>{
-          // eslint-disable-next-line
-          console.log(e);
-          store.dispatch('doLogout');
-          next('/')
-        })
+      if(token === store.state.token){
+        next()
+      }else{
+        store.dispatch('doLogout');
+        next('/')
+      }
     }else{
       store.dispatch('doLogout');
       next('/')

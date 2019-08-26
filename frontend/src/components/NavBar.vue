@@ -20,7 +20,7 @@
           <li v-else class="nav-item">
             <router-link class="nav-link" :to="{ name: 'register'}">Register</router-link>
           </li>
-          <li v-if="user.admin" class="nav-item">
+          <li v-if="isadmin" class="nav-item">
             <a class="nav-link" @click="logout">Admin</a>              
           </li>
         </b-navbar-nav>
@@ -33,9 +33,9 @@
 import { mapState } from 'vuex';
 export default {
   name: 'NavBar',
-  computed: mapState({
+  computed:mapState({
     isloggedin: state => state.loggedIn,
-    user: state => state.user
+    isadmin: ({user}) => user.admin
   }),
   methods:{
     logout(){

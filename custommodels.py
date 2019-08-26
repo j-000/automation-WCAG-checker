@@ -20,6 +20,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(25), nullable=False)
     email = db.Column(db.String(50), nullable=False)
+    scan_quota = db.Column(db.Integer(), default=31)
     is_admin = db.Column(db.Boolean(), default=False)
     password = db.Column(db.Text(), nullable=False)
     token = db.Column(db.Text())
@@ -95,6 +96,16 @@ class User(db.Model, UserMixin):
         user = User.decode_token(token)
         return user
 
+    def start_new_report(self, url, alias):
+        Report(url, self.id, alias)
+        self.reduce_scan_quota()
+        return
+    
+    def reduce_scan_quota(self):
+        self.scan_quota -= 1
+        db.session.add(self)
+        db.session.commit()
+        return
 
 '''
 Checkpoint Class
@@ -147,20 +158,29 @@ class Checkpoint(db.Model):
         return checkpoints_array
 
 
+'''
+Report Class
+'''
 class Report(db.Model):
   __tablename__ = 'reports'
 
   id = db.Column(db.Integer, primary_key=True)
   url = db.Column(db.Text())
+  timestamp = db.Column(db.DateTime(), default=datetime.datetime.now())
+  alias = db.Column(db.String(200))
   results = db.Column(db.Text())
   hashid = db.Column(db.String(200))
+  seo = db.Column(db.Float())
+  accessibility = db.Column(db.Float())
+  usability = db.Column(db.Float())
   userid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-  def __init__(self, url, userid):
+  def __init__(self, url, userid, alias=None):
     self.url = url
     reportstring = f'{url}-{str(datetime.datetime.now())}-{randint(0, 1000)}'
     self.hashid = hashlib.sha256(reportstring.encode('utf-8')).hexdigest()
     self.userid = userid
+    self.alias = alias
     db.session.add(self)
     db.session.commit()
     return
@@ -169,12 +189,16 @@ class Report(db.Model):
   def fetch(reportid):
     return Report.query.filter_by(hashid=reportid).first()
   
-  def update_results(self, results):
+  def update_results(self, results, seo, accessibility, usability):
     self.results = results
+    self.seo = seo
+    self.accessibility = accessibility
+    self.usability = usability
     db.session.add(self)
     db.session.commit()
     return self
 
   def get_json_results(self):
-    return json.loads(self.results.replace("'",'"'))
-
+    if self.results:
+        return json.loads(self.results.replace("'",'"'))
+    return None

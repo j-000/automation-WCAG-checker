@@ -31,7 +31,6 @@
             required
           ></b-form-input>
         </b-form-group>
-
         <b-button type="submit" variant="success">Submit</b-button>
       </b-form>
     </div>    
@@ -52,14 +51,6 @@
     methods: {
       register(){
         this.$store.dispatch('register_user', this.form)
-        .then(()=>{
-          this.$router.push('/')
-        })
-      },
-      resetForm(){
-        this.form.name = '';
-        this.form.email = '';
-        this.form.password = '';
       }
     }
   }

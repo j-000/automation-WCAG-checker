@@ -24,10 +24,16 @@ export default {
   logout(token){
     return ApiClient.delete('/authenticate', auth_header(token))
   },
-  verify_token(token){
+  update_user(token){
     return ApiClient.get('/authenticate', auth_header(token))
   },
-  get_user_reports(user, token){
-    return ApiClient.get(`/user/${user.id}/reports`, auth_header(token))
+  get_user_reports(userid, token){
+    return ApiClient.get(`/user/${userid}/reports`, auth_header(token))
+  },
+  get_report_by_hid(token, userid, reporthid){
+    return ApiClient.get(`/user/${userid}/reports/${reporthid}`, auth_header(token))
+  },
+  start_scan(token, payload){
+    return ApiClient.post('/scans', payload, auth_header(token))
   }
 }

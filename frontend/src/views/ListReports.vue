@@ -1,28 +1,22 @@
 <template>
-  <div>
-      <table class="table">
-          <thead>
-              <tr>
-                  <th>id</th>
-                  <th>link</th>
-              </tr>
-          </thead>
-          <tbody>
-              <a @click="g">clck</a>
-          </tbody>
-      </table>
+  <div class="card-columns">
+    <ReportCard v-for="report in reports" :key="report.id" :report="report"/>
   </div>
 </template>
 
 <script>
+import ReportCard from '../components/ReportCard'
+import { mapState } from 'vuex';
 export default {
   name: 'ReportView',
-  methods:{
-    g(){
-      this.$store.dispatch('getUserReports');
-      // eslint-disable-next-line
-      console.log(this.$store.state.user.reports);
-    }
+  components:{
+    ReportCard
+  },
+  computed: mapState({
+    reports: ({reports}) => reports
+  }),
+  created(){
+    this.$store.dispatch('get_user_reports')
   }
 }
 </script>

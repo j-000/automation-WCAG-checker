@@ -1,15 +1,15 @@
 <template>
   <div>
-    <Tester />
+    <Scanner />
   </div>
 </template>
 
 <script>
-import Tester from '../components/Tester';
+import Scanner from '../components/Scanner';
 export default {
   name: 'RunScan',
   components: {
-    Tester
+    Scanner
   }
 }
 </script>

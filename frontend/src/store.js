@@ -1,7 +1,7 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import router from './router';
-import ApiService from './services/ApiService';
+import Vue from 'vue'
+import Vuex from 'vuex'
+import ApiService from './services/ApiService'
+import router from './router'
 
 Vue.use(Vuex);
 const store = new Vuex.Store({
@@ -9,7 +9,7 @@ const store = new Vuex.Store({
     token: null,
     loggedIn: false,
     user: {},
-    alert: [],
+    alerts: [],
     reports: []
   },
   mutations:{
@@ -23,29 +23,40 @@ const store = new Vuex.Store({
       state.token = null
       state.loggedIn = false
       state.user = {}
+      state.reports = []
     },
     UPDATE_ALERT(state, newalertobject){
-      state.alert.push(newalertobject)
+      state.alerts.push(newalertobject)
     },
     REMOVE_ALERT(state, alerttoremove){
-      var i = state.alert.indexOf(alerttoremove)
-      state.alert.splice(i, 1)
+      var i = state.alerts.indexOf(alerttoremove)
+      state.alerts.splice(i, 1)
     },
     UPDATE_REPORTS(state, newreports){
-      state.user.reports = newreports
+      state.reports = newreports
+    },
+    UPDATE_USER(state, newuserobj){
+      state.user = newuserobj
+    },
+    DECREASE_SCAN_QUOTA(state){
+      state.user.scan_quota -= 1
     }
   },
   actions:{
     // call mutations, do async stuff, axios calls, etc.
+
     register_user({dispatch}, payload){
       return ApiService.register_user({name:payload.name, email:payload.email, password:payload.password})
       .then(({data})=>{
         if(data.success){
-          dispatch('authenticate', payload)
+          dispatch('authenticate', {email:payload.email, password:payload.password})
+          router.push('/')
+        }else{
+          dispatch('alertUser', {message:data.message, success:data.success})
         }
-        dispatch('alertUser', data)
-      }).catch(e=>{
-        alert(e);
+      })
+      .catch(e=>{
+        dispatch('alertUser', {message:e, success:false})
       })
     },
     doLogout({commit, dispatch, state}){
@@ -53,6 +64,7 @@ const store = new Vuex.Store({
         commit('LOGOUT')
         localStorage.clear()
         dispatch('alertUser', data)
+        router.push('/')
       }).catch(e=>{
         alert(e);
       })
@@ -61,38 +73,60 @@ const store = new Vuex.Store({
       commit('UPDATE_ALERT', newalertobject)
       setTimeout(function(){
         commit('REMOVE_ALERT', newalertobject)
-      }, 1500)
+      }, 2500)
     },
-    authenticate(context, payload){
+    authenticate({commit, dispatch}, payload){
       return ApiService.authenticate(payload.email, payload.password)
       .then(res =>{
         if(res.data.success){
-          localStorage.setItem('token', res.data.token);
-          context.commit('LOGIN', {token:res.data.token, user:res.data.user})
+          localStorage.setItem('token', res.data.user.token);
+          commit('LOGIN', {token:res.data.user.token, user:res.data.user})
         }
-        context.dispatch('alertUser', res.data)
+        dispatch('alertUser', res.data)
       })
       .catch(e=>{
-        alert(e);
+        dispatch('alertUser', {message:e, success:false})
       })
     },
-    getUserReports(context){
-      return ApiService.getUserReports(context.state.user, context.state.token)
-      .then(res => {
-        context.commit('UPDATE_REPORTS', res.data.reports)
+    get_user_reports({state, commit, dispatch}){
+      return ApiService.get_user_reports(state.user.id, state.token)
+      .then(({data})=> {
+        if(data.success){
+          commit('UPDATE_REPORTS', data.reports)
+        }else{
+          dispatch('alertUser', data)
+        }
       })
       .catch(e=>{
-        alert(e);
+        dispatch('alertUser', {message:e, success:false})
+      })
+    },
+    start_scan({state, commit, dispatch}, payload){
+      if(state.user.scan_quota > 0){
+        return ApiService.start_scan(state.token, payload)
+        .then(({data}) => {
+          if(data.success){
+            commit('DECREASE_SCAN_QUOTA')
+          }
+          dispatch('alertUser', data)
+          return data
+        })
+        .catch(e=>{
+          dispatch('alertUser', {message:e, success:false})
+        })
+      }else{
+        dispatch('alertUser', {message: 'You have no more scans to use.', success:false})
+      }
+    },
+    update_user({state, commit}){
+      return ApiService.update_user(state.token).then(({data})=>{
+        commit('UPDATE_USER', data.user)
       })
     }
   },
   getters: {
-    getstate(state){
-      return state;
-    },
-    getuserreports(state){
-      return state.user.reports
-    }
+    getalerts({alerts}){return alerts},
+    get_scan_quota(context){return context.user.scan_quota}
   }
 })
 
