@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col text-left">
       <h1>Scan a website</h1>
-      <b-form v-if="scan_quota > 30" @submit.prevent="start_scan">
+      <b-form v-if="scan_quota > 29" @submit.prevent="start_scan">
         <b-form-group>
           <p>Once your scan finishes, you will receive an email with a unique link to view your report.</p>
           <b-form-input class="mb-2" v-model="form.url" type="text" placeholder="URL"></b-form-input>
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 
 export default {
   name: 'Tester',
@@ -43,8 +43,8 @@ export default {
       this.form = {url:'',alias:''}
     }
   },
-  computed:mapGetters({
-    scan_quota: 'get_scan_quota'
+  computed:mapState({
+    scan_quota: (state) => state.user.scan_quota
   })
   
 }

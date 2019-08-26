@@ -1,10 +1,10 @@
 from server import ma
-from custommodels import User, Checkpoint, Report
+from custommodels import User, Checkpoint, Report, Invoice, Scan
 
 class UserSchema(ma.ModelSchema):
   class Meta:
     model = User
-    fields = ('id', 'token', 'name', 'is_admin', 'scan_quota')
+    # all fields public
 
 class CheckpointSchema(ma.ModelSchema):
   class Meta:
@@ -14,4 +14,14 @@ class CheckpointSchema(ma.ModelSchema):
 class ReportSchema(ma.ModelSchema):
   class Meta:
     model = Report
+    # all fields public
+
+class ScanSchema(ma.ModelSchema):
+  class Meta:
+    model = Scan
+    # all fields public
+
+class InvoiceSchema(ma.ModelSchema):
+  class Meta:
+    model = Invoice
     # all fields public

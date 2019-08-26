@@ -2,7 +2,7 @@ from flask_restful import Resource
 from flask import request, jsonify, make_response
 import requests
 from Scanner import Scanner
-from custommodels import Report, User
+from custommodels import Report, User, Checkpoint, Invoice, Scan
 from threading import Thread
 from server import app
 from emailer import sendemail
@@ -10,7 +10,7 @@ import datetime
 from decorators import jwt_required, admins_only
 import hashlib
 
-from modelserializers import (UserSchema, ReportSchema, CheckpointSchema)
+from modelserializers import (UserSchema, ReportSchema, CheckpointSchema, InvoiceSchema, ScanSchema)
 
 
 threads = []
@@ -125,7 +125,7 @@ class Authentication(Resource):
     '''
     if user.token != token:
       return jsonify({'message':'You are not logged in.', 'success':False})
-    return jsonify({'verified':True, 'user': UserSchema().dump(user)})
+    return jsonify({'verified':True, 'user': UserSchema(exclude=['password', 'invoices', 'scans']).dump(user)})
     
   def post(self):
     '''
@@ -143,7 +143,7 @@ class Authentication(Resource):
     verify_password = user.check_password(password_to_compare=password)
     if verify_password:
       token = user.generate_session_token()
-      return jsonify({'user': UserSchema().dump(user), 'success':True, 'message':f'Welcome, {user.name}'})
+      return jsonify({'user': UserSchema(exclude=['password', 'invoices', 'scans']).dump(user), 'success':True, 'message':f'Welcome, {user.name}'})
     else:
       return jsonify({'message':'Password verification failed.', 'success':False})
       
@@ -194,3 +194,14 @@ class Register(Resource):
       return jsonify({'message':'You are not logged in.', 'success':False})
     User.delete(user)
     return jsonify({'message':'Account deleted.', 'success':True})
+
+
+'''
+/api/v1/standard-checkpoints (standard checkpoints)
+'''
+class StandardCheckpoints(Resource):
+  
+  # @jwt_required
+  def get(self, token=None, user=None):
+    general_checkpoints = Checkpoint.query.filter_by(scanid=None).all()
+    return jsonify({'checkpoints': [CheckpointSchema(exclude=['scan', 'regex']).dump(c) for c in general_checkpoints]})

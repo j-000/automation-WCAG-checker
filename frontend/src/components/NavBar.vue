@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-navbar-brand href="/">CompHero</b-navbar-brand>
+      <b-navbar-brand href="/">CompHero <span v-if="haspremium" class="badge badge-warning">Premium</span></b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
@@ -16,6 +16,9 @@
           </li>
           <li v-if="isloggedin" class="nav-item">
             <a class="nav-link" @click="logout">Logout</a>              
+          </li>
+          <li v-if="isloggedin" class="nav-item">
+            <a class="nav-link">Support</a>              
           </li>
           <li v-else class="nav-item">
             <router-link class="nav-link" :to="{ name: 'register'}">Register</router-link>
@@ -35,7 +38,8 @@ export default {
   name: 'NavBar',
   computed:mapState({
     isloggedin: state => state.loggedIn,
-    isadmin: ({user}) => user.admin
+    isadmin: ({user}) => user.admin,
+    haspremium: ({user}) => user.has_premium
   }),
   methods:{
     logout(){

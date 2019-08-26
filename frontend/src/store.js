@@ -10,7 +10,8 @@ const store = new Vuex.Store({
     loggedIn: false,
     user: {},
     alerts: [],
-    reports: []
+    reports: [],
+    standard_checkpoints: []
   },
   mutations:{
     // should only change state. Nothing else.
@@ -19,11 +20,8 @@ const store = new Vuex.Store({
       state.user = payload.user
       state.loggedIn = true
     },
-    LOGOUT(state){
-      state.token = null
-      state.loggedIn = false
-      state.user = {}
-      state.reports = []
+    LOGOUT(){
+      location.reload()
     },
     UPDATE_ALERT(state, newalertobject){
       state.alerts.push(newalertobject)
@@ -40,6 +38,9 @@ const store = new Vuex.Store({
     },
     DECREASE_SCAN_QUOTA(state){
       state.user.scan_quota -= 1
+    },
+    UPDATE_STANDARD_CHECKPOINTS(state, newcheckpoints){
+      state.standard_checkpoints = newcheckpoints
     }
   },
   actions:{
@@ -122,11 +123,15 @@ const store = new Vuex.Store({
       return ApiService.update_user(state.token).then(({data})=>{
         commit('UPDATE_USER', data.user)
       })
+    },
+    get_standard_checkpoints({state, commit}){
+      return ApiService.get_standard_checkpoints(state.token).then(({data})=>{
+        commit('UPDATE_STANDARD_CHECKPOINTS', data.checkpoints)
+      })
     }
   },
   getters: {
-    getalerts({alerts}){return alerts},
-    get_scan_quota(context){return context.user.scan_quota}
+    getalerts({alerts}){return alerts}
   }
 })
 

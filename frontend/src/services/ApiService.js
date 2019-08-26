@@ -35,5 +35,8 @@ export default {
   },
   start_scan(token, payload){
     return ApiClient.post('/scans', payload, auth_header(token))
+  },
+  get_standard_checkpoints(token){
+    return ApiClient.get('/standard-checkpoints', auth_header(token))
   }
 }
