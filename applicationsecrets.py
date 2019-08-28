@@ -2,7 +2,7 @@ from devsettings import DEVELOPMENT
 
 # # email credentials
 MAIL_USERNAME ='allgreencode@gmail.com'
-MAIL_PASSWORD = 'AGC2020J#'
+MAIL_PASSWORD = ''
 MAIL_DEFAULT_SENDER ='allgreencode@gmail.com'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False 
