@@ -11,10 +11,10 @@ SECURITY_PASSWORD_SALT = 'cXvLHzs6uAEfcFAEdzrwdjafqcXvLHzs6uAcXvLHzs6uAEfcFAEdzr
 #################################################################
 ''' Database '''
 ##################################################################
-URI = 'supcpdb.cr2bi5gkfxzr.eu-west-2.rds.amazonaws.com'
-PORT = '3306'
-USER = 'supadmin'
-SECRET = 'A2Sowb18!&sdkdqpLAKY2XEFJ383sjbcsdk72'
+URI = ''
+PORT = ''
+USER = ''
+SECRET = ''
 NAME = 'comphero'
 
 if DEVELOPMENT:
